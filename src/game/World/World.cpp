@@ -84,7 +84,7 @@
 #endif
 
 #ifdef ENABLE_IMMERSIVE
-#include "Immersive.h"
+#include "ImmersiveMgr.h"
 #endif
 
 #include "Metric/Metric.h"
@@ -1078,7 +1078,7 @@ void World::SetInitialWorldSettings()
     CharacterDatabase.PExecute("DELETE FROM corpse WHERE corpse_type = '0' OR time < (" _UNIXTIME_ "-'%u')", 3 * DAY);
 
 #ifdef ENABLE_IMMERSIVE
-    sImmersive.Init();
+    sImmersiveMgr.Init();
 #endif
 
     /// load spell_dbc first! dbc's need them
@@ -1817,7 +1817,7 @@ void World::Update(uint32 diff)
 #endif
 
 #ifdef ENABLE_IMMERSIVE
-    sImmersive.Update(diff);
+    sImmersiveMgr.Update(diff);
 #endif
 
     /// <li> Handle session updates
