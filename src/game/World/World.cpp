@@ -87,6 +87,10 @@
 #include "ImmersiveMgr.h"
 #endif
 
+#ifdef ENABLE_ACHIEVEMENTS
+#include "AchievementsMgr.h"
+#endif
+
 #include "Metric/Metric.h"
 #include "Maps/TransportMgr.h"
 
@@ -1503,6 +1507,10 @@ void World::SetInitialWorldSettings()
     sLog.outString("Initializing Scripting Library...");
     sScriptDevAIMgr.Initialize();
     sLog.outString();
+
+#ifdef ENABLE_ACHIEVEMENTS
+    sAchievementsMgr.Init();
+#endif
 
     // after SD2
     sLog.outString("Loading spell scripts...");
