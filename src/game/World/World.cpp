@@ -91,6 +91,10 @@
 #include "AchievementsMgr.h"
 #endif
 
+#ifdef ENABLE_HARDCORE
+#include "HardcoreMgr.h"
+#endif
+
 #include "Metric/Metric.h"
 #include "Maps/TransportMgr.h"
 
@@ -1085,6 +1089,10 @@ void World::SetInitialWorldSettings()
     sImmersiveMgr.Init();
 #endif
 
+#ifdef ENABLE_HARDCORE
+    sHardcoreMgr.PreLoad();
+#endif
+
     /// load spell_dbc first! dbc's need them
     sLog.outString("Loading spell_template...");
     sObjectMgr.LoadSpellTemplate();
@@ -1508,10 +1516,6 @@ void World::SetInitialWorldSettings()
     sScriptDevAIMgr.Initialize();
     sLog.outString();
 
-#ifdef ENABLE_ACHIEVEMENTS
-    sAchievementsMgr.Init();
-#endif
-
     // after SD2
     sLog.outString("Loading spell scripts...");
     SpellScriptMgr::LoadScripts();
@@ -1631,6 +1635,14 @@ void World::SetInitialWorldSettings()
 #endif
 #ifdef ENABLE_PLAYERBOTS
     sPlayerbotAIConfig.Initialize();
+#endif
+
+#ifdef ENABLE_ACHIEVEMENTS
+    sAchievementsMgr.Init();
+#endif
+
+#ifdef ENABLE_HARDCORE
+    sHardcoreMgr.Init();
 #endif
 
     sTransmogrification->LoadConfig(false);

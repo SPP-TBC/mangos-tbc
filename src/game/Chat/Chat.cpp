@@ -40,10 +40,6 @@
 #include "PlayerbotAIConfig.h"
 #endif
 
-#ifdef ENABLE_ACHIEVEMENTS
-#include "AchievementsMgr.h"
-#endif
-
 #include <cstdarg>
 
 // Supported shift-links (client generated and server side)
@@ -1065,6 +1061,9 @@ ChatCommand* ChatHandler::getCommandTable()
 #endif
 #ifdef ENABLE_ACHIEVEMENTS
         { "achievements",   SEC_PLAYER,         false, &ChatHandler::HandleAchievementsCommand,        "", nullptr },
+#endif
+#ifdef ENABLE_HARDCORE
+        { "hardcore",       SEC_GAMEMASTER,     false, &ChatHandler::HandleHardcoreCommand,            "", nullptr },
 #endif
         { nullptr,          0,                  false, nullptr,                                        "", nullptr }
     };
