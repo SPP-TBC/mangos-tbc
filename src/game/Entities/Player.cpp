@@ -656,6 +656,7 @@ Player::Player(WorldSession* session): Unit(), m_taxiTracker(*this), m_mover(thi
 
     m_lastDbGuid = 0;
     m_lastGameObject = false;
+    m_experienceModifier = 1; // Defaults to 1x XP rates, Available rates are stated in database
 }
 
 Player::~Player()
@@ -2670,8 +2671,27 @@ void Player::SendLogXPGain(uint32 GivenXP, Unit* victim, uint32 RestXP, bool rec
     GetSession()->SendPacket(data);
 }
 
+void Player::EnableXPGain()
+{
+    m_xpGainEnabled = true;
+}
+
+void Player::DisableXPGain()
+{
+    m_xpGainEnabled = false;
+    // Send a message to the player indicating that XP gain is disabled
+}
+
+bool Player::IsXPDisabled()
+{
+    return !m_xpGainEnabled;
+}
+
 void Player::GiveXP(uint32 xp, Creature* victim, float groupRate)
 {
+    if (!m_xpGainEnabled) // Check if XP gain is disabled
+        return;
+
     if (xp < 1)
         return;
 
@@ -2683,6 +2703,8 @@ void Player::GiveXP(uint32 xp, Creature* victim, float groupRate)
     // XP to money conversion processed in Player::RewardQuest
     if (level >= GetMaxAttainableLevel())
         return;
+
+    xp *= m_experienceModifier;
 
     // handle SPELL_AURA_MOD_XP_PCT auras
     Unit::AuraList const& ModXPPctAuras = GetAurasByType(SPELL_AURA_MOD_XP_PCT);
@@ -2798,7 +2820,15 @@ void Player::GiveLevel(uint32 level)
     // resend quests status directly
     GetSession()->SetCurrentPlayerLevel(level);
     SendQuestGiverStatusMultiple();
+
+    uint32 cap = sWorld.GetExperienceCapForLevel(GetLevel(), m_team);
+    if (cap < m_experienceModifier)
+    {
+        SetPlayerXPModifier(cap);
+        SendXPRateToPlayer();
+    }
 }
+
 
 void Player::UpdateFreeTalentPoints(bool resetIfNeed)
 {
@@ -15539,6 +15569,25 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
 
     _LoadCreatedInstanceTimers();
 
+        // voa only custom code
+    std::unique_ptr<QueryResult> result = CharacterDatabase.PQuery("SELECT value FROM character_settings WHERE guid = %u AND id = %u", GetGUIDLow(), PLAYER_SETTING_XP_MODIFIER);
+    if (result)
+    {
+        Field* fields = result->Fetch();
+        m_experienceModifier = fields[0].GetUInt32();
+        uint32 cap = sWorld.GetExperienceCapForLevel(GetLevel(), m_team);
+        if (m_experienceModifier > cap)
+        {
+            m_experienceModifier = cap;
+            CharacterDatabase.PExecute("UPDATE character_settings SET value = '%u' WHERE guid = '%u' AND id = '%u'", m_experienceModifier, GetGUIDLow(), PLAYER_SETTING_XP_MODIFIER);
+        }
+    }
+    else
+    {
+        m_experienceModifier = 1;
+    }
+    // voa only custom code end
+
     return true;
 }
 
@@ -15861,6 +15910,7 @@ void Player::_LoadInventory(std::unique_ptr<QueryResult> queryResult, uint32 tim
     // if(IsAlive())
     _ApplyAllItemMods();
 }
+
 
 void Player::_LoadItemLoot(std::unique_ptr<QueryResult> queryResult)
 {
@@ -16780,6 +16830,7 @@ void Player::SaveToDB()
     _SaveNewInstanceIdTimer();
     m_reputationMgr.SaveToDB();
     GetSession()->SaveTutorialsData();                      // changed only while character in game
+    _SaveXPModifier();
 
     CharacterDatabase.CommitTransaction();
 
@@ -18555,6 +18606,33 @@ void Player::OnTaxiFlightRouteProgress(const TaxiPathNodeEntry* node, const Taxi
             StartEvents_Event(GetMap(), eventid, this, this, !arrival);
         }
     }
+}
+
+void Player::_SaveXPModifier()
+{
+    std::unique_ptr<QueryResult> result = CharacterDatabase.PQuery("SELECT value FROM character_settings WHERE guid = %u AND id = %u", GetGUIDLow(), PLAYER_SETTING_XP_MODIFIER);
+
+    if (result)
+    {
+        Field* fields = result->Fetch();
+        uint32 modifier = fields[0].GetUInt32();
+
+        if (modifier != m_experienceModifier)
+            CharacterDatabase.PExecute("UPDATE character_settings SET value = '%u' WHERE guid = '%u' AND id = '%u'", m_experienceModifier, GetGUIDLow(), PLAYER_SETTING_XP_MODIFIER);
+    }
+    else
+    {
+        CharacterDatabase.PExecute("INSERT INTO character_settings(guid,id,value) VALUES('%u','%u','%u')", GetGUIDLow(), PLAYER_SETTING_XP_MODIFIER, m_experienceModifier);
+    }
+}
+
+void Player::SendXPRateToPlayer()
+{
+    std::string xpLine = "Current XP rate:" + std::to_string(m_experienceModifier) + "\n";
+    WorldPacket data;
+    ChatHandler::BuildChatPacket(data, CHAT_MSG_SYSTEM, xpLine.data(), LANG_UNIVERSAL, CHAT_TAG_NONE, GetObjectGuid());
+    if (WorldSession* session = GetSession())
+        session->SendPacket(data);
 }
 
 void Player::InitDataForForm(bool reapplyMods)
@@ -22123,6 +22201,7 @@ bool Player::GetsRecruitAFriendBonus()
     }
     return false;
 }
+
 
 void Player::SetSpellModSpell(Spell* spell)
 {
