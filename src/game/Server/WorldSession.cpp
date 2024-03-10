@@ -52,7 +52,7 @@
 #endif
 
 #ifdef ENABLE_PLAYERBOTS
-#include "playerbot.h"
+#include "playerbot/playerbot.h"
 #endif
 
 // select opcodes appropriate for processing in Map::Update context for current session state
@@ -1358,6 +1358,11 @@ void WorldSession::InitializeAnticheat(const BigNumber& K)
 void WorldSession::AssignAnticheat(std::unique_ptr<SessionAnticheatInterface>&& anticheat)
 {
     m_anticheat = std::move(anticheat);
+}
+
+void WorldSession::SetDelayedAnticheat(std::unique_ptr<SessionAnticheatInterface>&& anticheat)
+{
+    m_delayedAnticheat = std::move(anticheat);
 }
 
 #ifdef BUILD_DEPRECATED_PLAYERBOT
