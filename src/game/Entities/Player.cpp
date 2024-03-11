@@ -490,6 +490,7 @@ Player::Player(WorldSession* session): Unit(), m_taxiTracker(*this), m_mover(thi
     m_valuesCount = PLAYER_END;
 
     SetActiveObjectState(true);                             // player is always active object
+    EnableXPGain();                                         // Defaults to enabling XP when login
 
     m_session = session;
 
