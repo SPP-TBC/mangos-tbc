@@ -51,8 +51,10 @@ enum
     YELL_DEATH                      = -1580030,
 
     SPELL_METEOR_SLASH              = 45150,
-    SPELL_BURN                      = 45141,
-    SPELL_BURN_DAMAGE               = 46394,
+    SPELL_BURN                      = 0,
+    SPELL_BURN_DAMAGE               = 0,
+    //SPELL_BURN                      = 45141,
+    //SPELL_BURN_DAMAGE               = 46394,
     SPELL_STOMP                     = 45185,
     SPELL_BERSERK                   = 26662,
     SPELL_SUMMON_DEATH_CLOUD        = 45884,                // Summoned on death

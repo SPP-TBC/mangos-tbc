@@ -34,19 +34,33 @@ enum
     SPELL_OPEN_PORTAL_PERIODIC      = 45994,    // periodic spell which opens a portal at 30 secs; triggers 45976
     SPELL_OPEN_PORTAL               = 45976,    // has muru portal as target
     SPELL_OPEN_PORTAL_AURA          = 45977,
-    SPELL_SUMMON_BERSERKER_1        = 46037,    // humanoids summoned at 15 secs (3 on each side) then after 60 secs
+    SPELL_SUMMON_BERSERKER_1        = 0,
     SPELL_SUMMON_BERSERKER_2        = 46040,    // there are two spells. one for each side
-    SPELL_SUMMON_FURY_MAGE_1        = 46038,
+    SPELL_SUMMON_FURY_MAGE_1        = 0,
     SPELL_SUMMON_FURY_MAGE_2        = 46039,
 
-    SPELL_SUMMON_DARK_FIEND_1       = 46000,    // summons 8 dark fiends (25744); ToDo: script npc in eventAI
-    SPELL_SUMMON_DARK_FIEND_2       = 46001,
-    SPELL_SUMMON_DARK_FIEND_3       = 46002,
-    SPELL_SUMMON_DARK_FIEND_4       = 46003,
-    SPELL_SUMMON_DARK_FIEND_5       = 46004,
-    SPELL_SUMMON_DARK_FIEND_6       = 46005,
-    SPELL_SUMMON_DARK_FIEND_7       = 46006,
-    SPELL_SUMMON_DARK_FIEND_8       = 46007,
+
+    // DISABLED SPELLS
+    //SPELL_SUMMON_BERSERKER_1        = 46037,    // humanoids summoned at 15 secs (3 on each side) then after 60 secs
+    //SPELL_SUMMON_FURY_MAGE_1        = 46038,
+
+    SPELL_SUMMON_DARK_FIEND_1       = 0,    // summons 8 dark fiends (25744); ToDo: script npc in eventAI
+    SPELL_SUMMON_DARK_FIEND_2       = 0,
+    SPELL_SUMMON_DARK_FIEND_3       = 0,
+    SPELL_SUMMON_DARK_FIEND_4       = 0,
+    SPELL_SUMMON_DARK_FIEND_5       = 0,
+    SPELL_SUMMON_DARK_FIEND_6       = 0,
+    SPELL_SUMMON_DARK_FIEND_7       = 0,
+    SPELL_SUMMON_DARK_FIEND_8       = 0,
+
+    //SPELL_SUMMON_DARK_FIEND_1       = 46000,    // summons 8 dark fiends (25744); ToDo: script npc in eventAI
+    //SPELL_SUMMON_DARK_FIEND_2       = 46001,
+    //SPELL_SUMMON_DARK_FIEND_3       = 46002,
+    //SPELL_SUMMON_DARK_FIEND_4       = 46003,
+    //SPELL_SUMMON_DARK_FIEND_5       = 46004,
+    //SPELL_SUMMON_DARK_FIEND_6       = 46005,
+    //SPELL_SUMMON_DARK_FIEND_7       = 46006,
+    //SPELL_SUMMON_DARK_FIEND_8       = 46007,
 
     SPELL_DARK_FIEND_TRIGGER        = 45936,
 
@@ -77,8 +91,14 @@ enum
     // darkness spells
     SPELL_DARKNESS_PERIODIC         = 45998,
     SPELL_VOID_ZONE_VISUAL          = 46265,
-    SPELL_VOID_ZONE_PERIODIC        = 46262,
-    SPELL_SUMMON_DARK_FIEND         = 46263,
+    SPELL_VOID_ZONE_PERIODIC        = 0,
+    SPELL_SUMMON_DARK_FIEND         = 0,
+    
+
+    //SPELL_DARKNESS_PERIODIC       = 45998,
+    //SPELL_VOID_ZONE_VISUAL        = 46265,
+    //SPELL_VOID_ZONE_PERIODIC      = 46262,
+    //SPELL_SUMMON_DARK_FIEND       = 46263,
 
     // singularity
     // NPC_SINGULARITY                 = 25855,
@@ -88,9 +108,13 @@ enum
     SPELL_BLACK_HOLE_VISUAL_2       = 46235,
 
     // dark fiend
-    SPELL_DARK_FIEND_DUMMY          = 45943,
-    SPELL_DARK_FIEND_EXPLO          = 45944,
-    SPELL_DARK_FIEND_VISUAL         = 45934,
+    SPELL_DARK_FIEND_DUMMY          = 0,
+    SPELL_DARK_FIEND_EXPLO          = 0,
+    SPELL_DARK_FIEND_VISUAL         = 0,
+
+    //SPELL_DARK_FIEND_DUMMY = 45943,
+    //SPELL_DARK_FIEND_EXPLO = 45944,
+    //SPELL_DARK_FIEND_VISUAL = 45934,
 
     MAX_TRANSFORM_CASTS             = 10
 };
