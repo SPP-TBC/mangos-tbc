@@ -47,15 +47,19 @@ enum
     // ground phase
     SPELL_CLEAVE                = 19983,
     SPELL_CORROSION             = 45866,
-    SPELL_GAS_NOVA              = 45855,
+    SPELL_GAS_NOVA              = 0,
     SPELL_ENCAPSULATE           = 45665,
     SPELL_ENCAPSULATE_CHANNEL   = 45661,
 
+    //SPELL_GAS_NOVA              = 45855,
+
     // flight phase
-    SPELL_SUMMON_VAPOR          = 45391,
-    SPELL_VAPOR_SPAWN_TRIGGER   = 45388,
+    SPELL_SUMMON_VAPOR          = 0,
+    SPELL_VAPOR_SPAWN_TRIGGER   = 0,
     SPELL_SPEED_BURST           = 45495,
     // SPELL_FOG_CORRUPTION        = 45582,
+    ///SPELL_SUMMON_VAPOR          = 45391,
+    //SPELL_VAPOR_SPAWN_TRIGGER   = 45388,
 
     SPELL_TRIGGER_TOP_STRAFE    = 45586,
     SPELL_TRIGGER_MIDDLE_STRAFE = 45622,
