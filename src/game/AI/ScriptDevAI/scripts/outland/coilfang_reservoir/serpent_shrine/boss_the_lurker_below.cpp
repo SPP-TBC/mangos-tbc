@@ -41,8 +41,8 @@ enum
     SPELL_SUBMERGE                  = 28819,
     SPELL_CLEAR_ALL_DEBUFFS         = 34098,
 
-    NPC_COILFANG_AMBUSHER           = 21865,
-    NPC_COILFANG_GUARDIAN           = 21873,
+    NPC_COILFANG_AMBUSHER           = 0,
+    NPC_COILFANG_GUARDIAN           = 0,
 
     MAX_SUBMERGE_ADDS               = 9,
 };
