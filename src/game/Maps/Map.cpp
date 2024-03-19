@@ -925,6 +925,7 @@ void Map::Update(const uint32& t_diff)
 #endif
     }
 
+#ifdef ENABLE_PLAYERBOTS
     // active areas timer
     m_activeAreasTimer += t_diff;
     if (m_activeAreasTimer >= 10000)
@@ -968,12 +969,14 @@ void Map::Update(const uint32& t_diff)
     uint32 activeChars = 0;
     uint32 avgDiff = sWorld.GetAverageDiff();
     bool updateAI = urand(0, (HasRealPlayers() ? avgDiff : (avgDiff * 3))) < 10;
+#endif
     /// update players at tick
     for (m_mapRefIter = m_mapRefManager.begin(); m_mapRefIter != m_mapRefManager.end(); ++m_mapRefIter)
     {
         Player* plr = m_mapRefIter->getSource();
         if (plr && plr->IsInWorld())
         {
+#ifdef ENABLE_PLAYERBOTS
             bool isInActiveArea = false;
             if (!plr->GetPlayerbotAI() || plr->GetPlayerbotAI()->IsRealPlayer())
             {
@@ -1007,11 +1010,15 @@ void Map::Update(const uint32& t_diff)
             if (isInActiveArea)
                 activeChars++;
 
+#endif
             plr->Update(t_diff);
+#ifdef ENABLE_PLAYERBOTS
             plr->UpdateAI(t_diff, !(isInActiveArea || updateAI || plr->IsInCombat()));
+#endif
         }
     }
 
+#ifdef ENABLE_PLAYERBOTS
     hasRealPlayers = hasPlayers;
 
     if (IsContinent() && HasRealPlayers() && HasActiveAreas() && !m_activeAreasTimer)
@@ -1019,6 +1026,7 @@ void Map::Update(const uint32& t_diff)
         sLog.outBasic("Map %u: Active Areas:Zones - %u:%u", GetId(), m_activeAreas.size(), m_activeZones.size());
         sLog.outBasic("Map %u: Active Areas Chars - %u of %u", GetId(), activeChars, m_mapRefManager.getSize());
     }
+#endif
 
     for (m_mapRefIter = m_mapRefManager.begin(); m_mapRefIter != m_mapRefManager.end(); ++m_mapRefIter)
     {
@@ -1052,7 +1060,10 @@ void Map::Update(const uint32& t_diff)
     }
 
     // non-player active objects
+#ifdef ENABLE_PLAYERBOTS
     bool updateObj = urand(0, (HasRealPlayers() ? avgDiff : (avgDiff * 3))) < 10;
+#endif
+
     if (!m_activeNonPlayers.empty())
     {
         for (m_activeNonPlayersIter = m_activeNonPlayers.begin(); m_activeNonPlayersIter != m_activeNonPlayers.end();)
@@ -1067,6 +1078,7 @@ void Map::Update(const uint32& t_diff)
             if (!obj->IsInWorld() || !obj->IsPositionValid())
                 continue;
 
+#ifdef ENABLE_PLAYERBOTS
             // skip objects if world is laggy
             if (IsContinent() && avgDiff > 100)
             {
@@ -1087,6 +1099,7 @@ void Map::Update(const uint32& t_diff)
                 if (!isInActiveArea && !updateObj)
                     continue;
             }
+#endif
 
             objToUpdate.insert(obj);
 

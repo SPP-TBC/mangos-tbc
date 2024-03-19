@@ -225,7 +225,7 @@ void WorldSession::SendPacket(WorldPacket const& packet, bool forcedSend /*= fal
     }
 #endif
 
-    if (!m_Socket || (m_sessionState != WORLD_SESSION_STATE_READY && !forcedSend))
+    if (!m_socket || (m_sessionState != WORLD_SESSION_STATE_READY && !forcedSend))
     {
         //sLog.outDebug("Refused to send %s to %s", packet.GetOpcodeName(), _player ? _player->GetName() : "UKNOWN");
         return;
@@ -764,16 +764,6 @@ void WorldSession::LogoutPlayer()
 
         // GM ticket notification
         sTicketMgr.OnPlayerOnlineState(*_player, false);
-
-        ObjectGuid pGUID = _player->GetObjectGuid();
-        for (Transmogrification::transmog2Data::const_iterator it = sTransmogrification->entryMap[pGUID].begin(); it != sTransmogrification->entryMap[pGUID].end(); ++it)
-            sTransmogrification->dataMap.erase(it->first);
-        sTransmogrification->entryMap.erase(pGUID);
-
-#ifdef PRESETS
-        if (sTransmogrification->GetEnableSets())
-            sTransmogrification->UnloadPlayerSets(pGUID);
-#endif
 
 #ifdef BUILD_DEPRECATED_PLAYERBOT
         // Remember player GUID for update SQL below
