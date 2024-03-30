@@ -659,6 +659,10 @@ class World
         static uint32 GetCurrentMSTime() { return m_currentMSTime; }
         static TimePoint GetCurrentClockTime() { return m_currentTime; }
         static uint32 GetCurrentDiff() { return m_currentDiff; }
+#ifdef ENABLE_PLAYERBOTS
+        static uint32 GetAverageDiff() { return m_averageDiff; }
+        static uint32 GetMaxDiff() { return m_maxDiff; }
+#endif
 
         // Custom
         uint32 GetExperienceCapForLevel(uint32 level, Team team);
@@ -794,6 +798,13 @@ class World
         static uint32 m_currentMSTime;
         static TimePoint m_currentTime;
         static uint32 m_currentDiff;
+#ifdef ENABLE_PLAYERBOTS
+        static uint32 m_currentDiffSum;
+        static uint32 m_currentDiffSumIndex;
+        static uint32 m_averageDiff;
+        static uint32 m_maxDiff;
+        static std::list<uint32> m_histDiff;
+#endif
 
         Messager<World> m_messager;
 
