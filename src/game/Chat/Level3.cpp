@@ -355,6 +355,14 @@ bool ChatHandler::HandleReloadLocalesAreaTriggerCommand(char* /*args*/)
     SendGlobalSysMessage("DB table `locales_areatrigger_teleport` reloaded.");
     return true;
 }
+    // Handle Reload for Autobroadcast.
+bool ChatHandler::HandleReloadAutoBroadcastCommand(char* /*args*/)
+{
+    sLog.outString("Re-Loading broadcast strings...");
+    sWorld.LoadBroadcastStrings();
+    SendGlobalSysMessage("Broadcast strings reloaded.");
+    return true;
+}
 
 bool ChatHandler::HandleReloadCommandCommand(char* /*args*/)
 {

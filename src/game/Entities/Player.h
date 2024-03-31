@@ -822,6 +822,11 @@ enum PlayerRestState
     REST_STATE_RAF_LINKED       = 0x04                      // Exact use unknown
 };
 
+enum PlayerSettings
+{
+    PLAYER_SETTING_XP_MODIFIER = 1,
+};
+
 class PlayerTaxi
 {
     public:
@@ -959,6 +964,7 @@ class TradeData
 
 class Player : public Unit
 {
+        bool m_xpGainEnabled;
         friend class WorldSession;
         friend class CinematicMgr;
 
@@ -972,6 +978,8 @@ class Player : public Unit
 
         void AddToWorld() override;
         void RemoveFromWorld() override;
+        void EnableXPGain(); // Function to enable XP gain
+        void DisableXPGain(); // Function to disable XP gain
 
         bool TeleportTo(uint32 mapid, float x, float y, float z, float orientation, uint32 options = 0, AreaTrigger const* at = nullptr, GenericTransport* transport = nullptr);
 
@@ -981,6 +989,7 @@ class Player : public Unit
         }
 
         bool TeleportToBGEntryPoint();
+        bool IsXPDisabled(); // Function to check if XP gain is disabled
 
         void SetSummonPoint(uint32 mapid, float x, float y, float z, ObjectGuid summoner)
         {
@@ -2275,7 +2284,10 @@ class Player : public Unit
         bool HasTitle(CharTitlesEntry const* title) const { return HasTitle(title->bit_index); }
         void SetTitle(uint32 titleId, bool lost = false);
         void SetTitle(CharTitlesEntry const* title, bool lost = false, bool send = true);
-
+        uint32 GetPlayerXPModifier() { return m_experienceModifier; }
+        void SetPlayerXPModifier(uint32 modifier) { m_experienceModifier = modifier; }
+        void _SaveXPModifier();
+        void SendXPRateToPlayer();
         void SendMessageToPlayer(std::string const& message) const; // debugging purposes
         void SendThreatMessageToPlayer(std::string const& message) const; // debugging purposes
 
@@ -2434,6 +2446,7 @@ class Player : public Unit
         void _SaveSpells();
         void _SaveBGData();
         void _SaveStats();
+        uint32 m_experienceModifier; // XP Boost
 
         /*********************************************************/
         /***              ENVIRONMENTAL SYSTEM                 ***/

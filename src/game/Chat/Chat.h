@@ -566,6 +566,7 @@ class ChatHandler
         bool HandleReloadGossipMenuCommand(char* args);
         bool HandleReloadQuestgiverGreetingCommand(char* args);
         bool HandleReloadTrainerGreetingCommand(char* args);
+        bool HandleReloadAutoBroadcastCommand(char* args);
         bool HandleReloadGOQuestRelationsCommand(char* args);
         bool HandleReloadGOQuestInvRelationsCommand(char* args);
         bool HandleReloadItemEnchantementsCommand(char* args);
@@ -643,6 +644,13 @@ class ChatHandler
         bool HandleSendMassMailCommand(char* args);
         bool HandleSendMassMoneyCommand(char* args);
 
+        // Custom
+        bool HandleXPCommandSet(char* args);
+        bool HandleXPCommandCurrent(char* args);
+        bool HandleXPCommandAvailable(char* args);
+        bool HandleXPCommandDisable(char* args);
+        bool HandleXPCommandEnable(char* args);
+        // Custom
         bool HandleServerCorpsesCommand(char* args);
         bool HandleServerExitCommand(char* args);
         bool HandleServerIdleRestartCommand(char* args);
