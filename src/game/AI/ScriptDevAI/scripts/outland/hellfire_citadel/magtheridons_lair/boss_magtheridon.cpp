@@ -72,7 +72,7 @@ enum
     SPELL_SHADOW_BOLT_VOLLEY    = 30510,
     SPELL_DARK_MENDING          = 30528,
     SPELL_FEAR                  = 30530,                    // 39176
-    SPELL_BURNING_ABYSSAL       = 30511,
+    SPELL_BURNING_ABYSSAL       = 0,
     SPELL_SOUL_TRANSFER         = 30531,
 
     // summons

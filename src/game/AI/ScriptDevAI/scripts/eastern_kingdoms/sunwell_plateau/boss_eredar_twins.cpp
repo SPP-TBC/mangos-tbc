@@ -76,8 +76,10 @@ enum
     SPELL_FLAME_TOUCHED                     = 45348,        // Player debuff; removed by shadow damage
     SPELL_CONFLAGRATION                     = 45342,        // 30-35 secs
     SPELL_CONFLAGRATION_TICK                = 46768,
-    SPELL_BLAZE                             = 45235,        // On main target every 3 secs; should trigger 45236 which leaves a fire on the ground
-    SPELL_BLAZE_SUMMON                      = 45236,
+    SPELL_BLAZE                             = 38645,        // (Replaced Spell) On main target every 3 secs; should trigger 45236 which leaves a fire on the ground
+    SPELL_BLAZE_SUMMON                      = 0,
+    //SPELL_BLAZE = 45235,                                    // On main target every 3 secs; should trigger 45236 which leaves a fire on the ground
+    //SPELL_BLAZE_SUMMON = 45236,
     SPELL_FLAME_SEAR                        = 46771,        // A few random targets debuff
     SPELL_CONFLAGRATION_UNK                 = 45333,        // Unknown
     SPELL_FIREFORM                          = 45457,

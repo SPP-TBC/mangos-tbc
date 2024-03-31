@@ -82,24 +82,32 @@ enum
     SPELL_DESTROY_DRAKES        = 46707,
     SPELL_SINISTER_REFLECTION   = 45892,
     SPELL_SINISTER_REFLECTION_SUMMON = 45891,
-    SPELL_SHADOW_SPIKE          = 46680,
+    SPELL_SHADOW_SPIKE          = 0,
     SPELL_WING_SWEEP_1          = 46625,
     SPELL_WING_SWEEP_2          = 46626,
     SPELL_WING_SWEEP_3          = 46627,
 
+    //SPELL_SHADOW_SPIKE        = 46680,
+
     // phase 1
     SPELL_SOUL_FLAY             = 45442,
     SPELL_LEGION_LIGHTING       = 45664,
-    SPELL_FIRE_BLOOM            = 45641,
+    SPELL_FIRE_BLOOM            = 0,
+
+    //SPELL_FIRE_BLOOM            = 45641,
 
     // phase 2
     SPELL_FLAME_DART_MAIN       = 45737,
     SPELL_FLAME_DART_1          = 45740,
     SPELL_FLAME_DART_2          = 45741,
-    SPELL_DARKNESS_OF_SOULS     = 46605,
+    SPELL_DARKNESS_OF_SOULS     = 0,
+
+    //SPELL_DARKNESS_OF_SOULS   = 46605,
 
     // phase 3
-    SPELL_ARMAGEDDON            = 45921,        // used from 50% hp - summons 25735 on target location
+    SPELL_ARMAGEDDON            = 0,        // used from 50% hp - summons 25735 on target location
+
+    //SPELL_ARMAGEDDON          = 45921,
 
     // Npc spells
     SPELL_SHADOW_BOLT_AURA      = 45679,        // periodic aura on shield orbs

@@ -14,12 +14,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: boss_felmyst
-SD%Complete: 90%
-SDComment: Intro movement NYI; Event cleanup (despawn & resummon) NYI; Breath phase spells could use some improvements.
-SDCategory: Sunwell Plateau
-EndScriptData */
+ /* ScriptData
+ SDName: boss_felmyst
+ SD%Complete: 90%
+ SDComment: Intro movement NYI; Event cleanup (despawn & resummon) NYI; Breath phase spells could use some improvements.
+ SDCategory: Sunwell Plateau
+ EndScriptData */
 
 #include "AI/ScriptDevAI/include/sc_common.h"
 #include "sunwell_plateau.h"
@@ -29,51 +29,60 @@ EndScriptData */
 
 enum
 {
-    SAY_INTRO           = -1580036,
-    SAY_KILL_1          = 25640,
-    SAY_KILL_2          = 25641,
-    SAY_DEATH           = -1580042,
-    SAY_TAKEOFF         = -1580040,
-    SAY_BREATH          = -1580039,
-    SAY_BERSERK         = -1580041,
-    EMOTE_DEEP_BREATH   = -1580107,
+    SAY_INTRO = -1580036,
+    SAY_KILL_1 = 25640,
+    SAY_KILL_2 = 25641,
+    SAY_DEATH = -1580042,
+    SAY_TAKEOFF = -1580040,
+    SAY_BREATH = -1580039,
+    SAY_BERSERK = -1580041,
+    EMOTE_DEEP_BREATH = -1580107,
 
-    SPELL_FELBLAZE_VISUAL       = 45068,        // Visual transform aura
-    SPELL_NOXIOUS_FUMES         = 47002,
-    SPELL_SOUL_SEVER            = 45918,        // kills all charmed targets at wipe - script effect for 45917
-    SPELL_SOUL_SEVER_INSTAKILL  = 45917,
-    SPELL_BERSERK               = 26662,
+    SPELL_FELBLAZE_VISUAL = 45068,        // Visual transform aura
+    SPELL_NOXIOUS_FUMES = 47002,
+    SPELL_SOUL_SEVER = 45918,        // kills all charmed targets at wipe - script effect for 45917
+    SPELL_SOUL_SEVER_INSTAKILL = 45917,
+    SPELL_BERSERK = 26662,
 
     // ground phase
-    SPELL_CLEAVE                = 19983,
-    SPELL_CORROSION             = 45866,
-    SPELL_GAS_NOVA              = 45855,
-    SPELL_ENCAPSULATE           = 45665,
-    SPELL_ENCAPSULATE_CHANNEL   = 45661,
+    SPELL_CLEAVE = 19983,
+    SPELL_CORROSION = 45866,
+    SPELL_GAS_NOVA = 0,
+    SPELL_ENCAPSULATE = 0,
+    SPELL_ENCAPSULATE_CHANNEL = 0,
+
+    // SPELL_ENCAPSULATE = 45665,
+    // SPELL_ENCAPSULATE_CHANNEL = 45661,
+    // SPELL_GAS_NOVA              = 45855,
 
     // flight phase
-    SPELL_SUMMON_VAPOR          = 45391,
-    SPELL_VAPOR_SPAWN_TRIGGER   = 45388,
-    SPELL_SPEED_BURST           = 45495,
+    SPELL_SUMMON_VAPOR = 0,
+    SPELL_VAPOR_SPAWN_TRIGGER = 0,
+    SPELL_SPEED_BURST = 45495,
     // SPELL_FOG_CORRUPTION        = 45582,
+    ///SPELL_SUMMON_VAPOR          = 45391,
+    //SPELL_VAPOR_SPAWN_TRIGGER   = 45388,
 
-    SPELL_TRIGGER_TOP_STRAFE    = 45586,
+    SPELL_TRIGGER_TOP_STRAFE = 45586,
     SPELL_TRIGGER_MIDDLE_STRAFE = 45622,
     SPELL_TRIGGER_BOTTOM_STRAFE = 45623,
 
-    SPELL_STRAFE_TOP            = 45585,
-    SPELL_STRAFE_MIDDLE         = 45633,
-    SPELL_STRAFE_BOTTOM         = 45635,
+    SPELL_STRAFE_TOP = 45585,
+    SPELL_STRAFE_MIDDLE = 45633,
+    SPELL_STRAFE_BOTTOM = 45635,
 
     // demonic vapor spells
-    SPELL_DEMONIC_VAPOR_PER     = 45411,
-    SPELL_DEMONIC_VAPOR         = 45399,
+    SPELL_DEMONIC_VAPOR_PER = 45411,
+    SPELL_DEMONIC_VAPOR = 45399,
     // SPELL_SUMMON_BLAZING_DEAD = 45400,
-    
-    SPELL_FOG_OF_CORRUPTION_CHARM = 45717,
-    SPELL_FOG_OF_CORRUPTION_BUFF = 45726,
 
-    SPELL_DUMMY_NUKE            = 21912,
+    // SPELL_FOG_OF_CORRUPTION_CHARM = 45717,
+    // SPELL_FOG_OF_CORRUPTION_BUFF = 45726,
+
+    SPELL_FOG_OF_CORRUPTION_CHARM = 0,
+    SPELL_FOG_OF_CORRUPTION_BUFF = 0,
+
+    SPELL_DUMMY_NUKE = 21912,
 
     // npcs
     // NPC_UNYELDING_DEAD       = 25268,        // spawned during flight phase
@@ -81,17 +90,17 @@ enum
     // NPC_DEMONIC_VAPOR_TRAIL     = 25267,
 
     // phases
-    PHASE_GROUND                = 1,
-    PHASE_AIR                   = 2,
-    PHASE_TRANSITION            = 3,
+    PHASE_GROUND = 1,
+    PHASE_AIR = 2,
+    PHASE_TRANSITION = 3,
 
     // subphases for air phase
-    SUBPHASE_VAPOR              = 4,
-    SUBPHASE_BREATH_SIDE        = 5,
-    SUBPHASE_BREATH_PREPARE     = 6,
-    SUBPHASE_BREATH_MOVE        = 7,
+    SUBPHASE_VAPOR = 4,
+    SUBPHASE_BREATH_SIDE = 5,
+    SUBPHASE_BREATH_PREPARE = 6,
+    SUBPHASE_BREATH_MOVE = 7,
 
-    POINT_AGGRO                 = 8,
+    POINT_AGGRO = 8,
 };
 
 /*######
@@ -140,9 +149,9 @@ struct boss_felmystAI : public CombatAI
         if (m_instance)
         {
             m_creature->GetCombatManager().SetLeashingCheck([](Unit* unit, float /*x*/, float /*y*/, float /*z*/)
-            {
-                return static_cast<ScriptedInstance*>(unit->GetInstanceData())->GetPlayerInMap(true, false) == nullptr;
-            });
+                {
+                    return static_cast<ScriptedInstance*>(unit->GetInstanceData())->GetPlayerInMap(true, false) == nullptr;
+                });
         }
         if (creature->IsTemporarySummon())
             static_cast<TemporarySpawn*>(m_creature)->SetSummonProperties(TEMPSPAWN_MANUAL_DESPAWN, 0);
@@ -165,12 +174,12 @@ struct boss_felmystAI : public CombatAI
     void Reset() override
     {
         CombatAI::Reset();
-        m_uiPhase               = PHASE_GROUND;
+        m_uiPhase = PHASE_GROUND;
 
         // Air phase
-        m_uiSubPhase            = SUBPHASE_VAPOR;
-        m_uiDemonicVaporCount   = 0;
-        m_uiCorruptionCount     = 0;
+        m_uiSubPhase = SUBPHASE_VAPOR;
+        m_uiDemonicVaporCount = 0;
+        m_uiCorruptionCount = 0;
 
         DoCastSpellIfCan(nullptr, SPELL_FELBLAZE_VISUAL, CAST_TRIGGERED);
         DoCastSpellIfCan(nullptr, SPELL_SOUL_SEVER, CAST_TRIGGERED);
@@ -210,30 +219,30 @@ struct boss_felmystAI : public CombatAI
         uint32 timer = 0;
         switch (m_animationSpawnStage)
         {
-            case 0:
-                m_creature->SetStandState(UNIT_STAND_STATE_STAND);
-                timer = 2500;
-                break;
-            case 1:
-                m_creature->HandleEmote(EMOTE_ONESHOT_LIFTOFF);
-                DoScriptText(SAY_INTRO, m_creature);
-                timer = 1000;
-                break;
-            case 2:
-                m_creature->SetLevitate(true);
-                m_creature->SetHover(true);
-                timer = 7500;
-                break;
-            case 3:
-                m_creature->GetMotionMaster()->MovePoint(PHASE_GROUND, 1489.438f, 651.615f, 44.65125f, FORCED_MOVEMENT_RUN);
-                break;
-            case 4:
-                SetCombatScriptStatus(false);
-                SetCombatMovement(true);
-                SetMeleeEnabled(true);
-                DoCastSpellIfCan(nullptr, SPELL_NOXIOUS_FUMES);
-                AttackClosestEnemy();
-                break;
+        case 0:
+            m_creature->SetStandState(UNIT_STAND_STATE_STAND);
+            timer = 2500;
+            break;
+        case 1:
+            m_creature->HandleEmote(EMOTE_ONESHOT_LIFTOFF);
+            DoScriptText(SAY_INTRO, m_creature);
+            timer = 1000;
+            break;
+        case 2:
+            m_creature->SetLevitate(true);
+            m_creature->SetHover(true);
+            timer = 7500;
+            break;
+        case 3:
+            m_creature->GetMotionMaster()->MovePoint(PHASE_GROUND, 1489.438f, 651.615f, 44.65125f, FORCED_MOVEMENT_RUN);
+            break;
+        case 4:
+            SetCombatScriptStatus(false);
+            SetCombatMovement(true);
+            SetMeleeEnabled(true);
+            DoCastSpellIfCan(nullptr, SPELL_NOXIOUS_FUMES);
+            AttackClosestEnemy();
+            break;
         }
         ++m_animationSpawnStage;
         if (timer)
@@ -295,64 +304,64 @@ struct boss_felmystAI : public CombatAI
 
         switch (pointId)
         {
-            case PHASE_GROUND:
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER);
-                m_creature->GetMotionMaster()->Clear(false, true);
-                m_creature->GetMotionMaster()->MovePath(1, PATH_FROM_ENTRY, FORCED_MOVEMENT_RUN, true, 0.f, true);
-                break;
-            case SUBPHASE_VAPOR:
-                // prepare to move to flight trigger
-                ResetTimer(FELMYST_DEMONIC_VAPOR, 5000);
-                m_uiSubPhase = SUBPHASE_VAPOR;
-                break;
-            case SUBPHASE_BREATH_SIDE:
-                ResetTimer(FELMYST_PREBREATH_DELAY, 5000);
-                ResetTimer(FELMYST_DUMMY_NUKE, 1500);
-                break;
-            case SUBPHASE_BREATH_PREPARE:
-                // move across the arena
-                if (!m_instance)
-                    return;
+        case PHASE_GROUND:
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER);
+            m_creature->GetMotionMaster()->Clear(false, true);
+            m_creature->GetMotionMaster()->MovePath(1, PATH_FROM_ENTRY, FORCED_MOVEMENT_RUN, true, 0.f, true);
+            break;
+        case SUBPHASE_VAPOR:
+            // prepare to move to flight trigger
+            ResetTimer(FELMYST_DEMONIC_VAPOR, 5000);
+            m_uiSubPhase = SUBPHASE_VAPOR;
+            break;
+        case SUBPHASE_BREATH_SIDE:
+            ResetTimer(FELMYST_PREBREATH_DELAY, 5000);
+            ResetTimer(FELMYST_DUMMY_NUKE, 1500);
+            break;
+        case SUBPHASE_BREATH_PREPARE:
+            // move across the arena
+            if (!m_instance)
+                return;
 
-                // After the third breath land and resume phase 1
-                if (m_uiCorruptionCount == 3)
+            // After the third breath land and resume phase 1
+            if (m_uiCorruptionCount == 3)
+            {
+                static Position landingPositions[] =
                 {
-                    static Position landingPositions[] =
-                    {
-                        {1469.93f, 557.009f, 22.6317f, 0.f},
-                        {1476.77f, 665.094f, 20.6423f, 0.f}
-                    };
-                    m_uiPhase = PHASE_TRANSITION; // TODO: figure out where to land
-                    m_creature->GetMotionMaster()->MovePoint(PHASE_TRANSITION, landingPositions[m_bIsLeftSide], FORCED_MOVEMENT_RUN, 0.f, false);
-                    return;
-                }
+                    {1469.93f, 557.009f, 22.6317f, 0.f},
+                    {1476.77f, 665.094f, 20.6423f, 0.f}
+                };
+                m_uiPhase = PHASE_TRANSITION; // TODO: figure out where to land
+                m_creature->GetMotionMaster()->MovePoint(PHASE_TRANSITION, landingPositions[m_bIsLeftSide], FORCED_MOVEMENT_RUN, 0.f, false);
+                return;
+            }
 
-                ++m_uiCorruptionCount;
-                ResetTimer(FELMYST_BREATH_DELAY, 4000);
-                DoScriptText(EMOTE_DEEP_BREATH, m_creature);
-                break;
-            case SUBPHASE_BREATH_MOVE:
-                if (!m_instance)
-                    return;
+            ++m_uiCorruptionCount;
+            ResetTimer(FELMYST_BREATH_DELAY, 4000);
+            DoScriptText(EMOTE_DEEP_BREATH, m_creature);
+            break;
+        case SUBPHASE_BREATH_MOVE:
+            if (!m_instance)
+                return;
 
-                // remove speed aura
-                m_creature->RemoveAurasDueToSpell(SPELL_SPEED_BURST);
+            // remove speed aura
+            m_creature->RemoveAurasDueToSpell(SPELL_SPEED_BURST);
 
-                // switch sides
-                m_bIsLeftSide = !m_bIsLeftSide;
-                HandleSideMove();
-                break;
-            case PHASE_TRANSITION:
-                HandleTransition();
-                break;
-            case POINT_AGGRO:
-                m_creature->HandleEmote(EMOTE_ONESHOT_LAND);
-                m_creature->SetLevitate(false);
-                m_creature->SetHover(false);
-                m_creature->GetMotionMaster()->MoveIdle();
-                ResetTimer(FELMYST_WAYPOINT_DELAY, 3000);
-                m_animationSpawnStage = 4; // should already be 3 but sanity assignment
-                break;
+            // switch sides
+            m_bIsLeftSide = !m_bIsLeftSide;
+            HandleSideMove();
+            break;
+        case PHASE_TRANSITION:
+            HandleTransition();
+            break;
+        case POINT_AGGRO:
+            m_creature->HandleEmote(EMOTE_ONESHOT_LAND);
+            m_creature->SetLevitate(false);
+            m_creature->SetHover(false);
+            m_creature->GetMotionMaster()->MoveIdle();
+            ResetTimer(FELMYST_WAYPOINT_DELAY, 3000);
+            m_animationSpawnStage = 4; // should already be 3 but sanity assignment
+            break;
         }
     }
 
@@ -461,56 +470,56 @@ struct boss_felmystAI : public CombatAI
     {
         switch (action)
         {
-            case FELMYST_BERSERK:
-                if (DoCastSpellIfCan(nullptr, SPELL_BERSERK) == CAST_OK)
-                {
-                    DoScriptText(SAY_BERSERK, m_creature);
-                    DisableCombatAction(action);
-                }
-                break;
-            case FELMYST_PHASE_CHANGE:
+        case FELMYST_BERSERK:
+            if (DoCastSpellIfCan(nullptr, SPELL_BERSERK) == CAST_OK)
             {
-                if (!CanExecuteCombatAction() || !m_creature->IsSpellReady(SPELL_ENCAPSULATE_CHANNEL))
-                    return;
-
-                m_creature->HandleEmote(EMOTE_ONESHOT_LIFTOFF);
-
-                SetCombatMovement(false);
-                m_creature->SetLevitate(true);
-                m_creature->SetHover(true);
-                DoScriptText(SAY_TAKEOFF, m_creature);
-                SetMeleeEnabled(false);
-                m_creature->SetTarget(nullptr);
-                m_creature->SetByteFlag(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_MISC_FLAGS, UNIT_BYTE1_FLAG_FLY_ANIM);
-                m_creature->SendForcedObjectUpdate();
-                ResetTimer(FELMYST_LIFTOFF_DELAY, 5000);
-                SetDeathPrevention(true);
-                SetCombatScriptStatus(true);
-
-                m_uiPhase = PHASE_TRANSITION;
-                m_uiSubPhase = SUBPHASE_VAPOR;
-                m_uiDemonicVaporCount = 0;
-                break;
+                DoScriptText(SAY_BERSERK, m_creature);
+                DisableCombatAction(action);
             }
-            case FELMYST_ENCAPSULATE:
-                if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, SPELL_ENCAPSULATE_CHANNEL, SELECT_FLAG_PLAYER | SELECT_FLAG_NOT_IMMUNE))
-                    DoCastSpellIfCan(target, SPELL_ENCAPSULATE_CHANNEL);
-                break;
-            case FELMYST_CORROSION:
-                if (DoCastSpellIfCan(m_creature->GetVictim(), SPELL_CORROSION) == CAST_OK)
-                {
-                    DoScriptText(SAY_BREATH, m_creature);
-                    ResetCombatAction(action, urand(32000, 40000));
-                }
-                break;
-            case FELMYST_CLEAVE:
-                if (DoCastSpellIfCan(m_creature->GetVictim(), SPELL_CLEAVE) == CAST_OK)
-                    ResetCombatAction(action, urand(15000, 29000));
-                break;
-            case FELMYST_GAS_NOVA:
-                if (DoCastSpellIfCan(nullptr, SPELL_GAS_NOVA) == CAST_OK)
-                    ResetCombatAction(action, urand(22000, 27000));
-                break;
+            break;
+        case FELMYST_PHASE_CHANGE:
+        {
+            if (!CanExecuteCombatAction() || !m_creature->IsSpellReady(SPELL_ENCAPSULATE_CHANNEL))
+                return;
+
+            m_creature->HandleEmote(EMOTE_ONESHOT_LIFTOFF);
+
+            SetCombatMovement(false);
+            m_creature->SetLevitate(true);
+            m_creature->SetHover(true);
+            DoScriptText(SAY_TAKEOFF, m_creature);
+            SetMeleeEnabled(false);
+            m_creature->SetTarget(nullptr);
+            m_creature->SetByteFlag(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_MISC_FLAGS, UNIT_BYTE1_FLAG_FLY_ANIM);
+            m_creature->SendForcedObjectUpdate();
+            ResetTimer(FELMYST_LIFTOFF_DELAY, 5000);
+            SetDeathPrevention(true);
+            SetCombatScriptStatus(true);
+
+            m_uiPhase = PHASE_TRANSITION;
+            m_uiSubPhase = SUBPHASE_VAPOR;
+            m_uiDemonicVaporCount = 0;
+            break;
+        }
+        case FELMYST_ENCAPSULATE:
+            if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, SPELL_ENCAPSULATE_CHANNEL, SELECT_FLAG_PLAYER | SELECT_FLAG_NOT_IMMUNE))
+                DoCastSpellIfCan(target, SPELL_ENCAPSULATE_CHANNEL);
+            break;
+        case FELMYST_CORROSION:
+            if (DoCastSpellIfCan(m_creature->GetVictim(), SPELL_CORROSION) == CAST_OK)
+            {
+                DoScriptText(SAY_BREATH, m_creature);
+                ResetCombatAction(action, urand(32000, 40000));
+            }
+            break;
+        case FELMYST_CLEAVE:
+            if (DoCastSpellIfCan(m_creature->GetVictim(), SPELL_CLEAVE) == CAST_OK)
+                ResetCombatAction(action, urand(15000, 29000));
+            break;
+        case FELMYST_GAS_NOVA:
+            if (DoCastSpellIfCan(nullptr, SPELL_GAS_NOVA) == CAST_OK)
+                ResetCombatAction(action, urand(22000, 27000));
+            break;
         }
     }
 };
@@ -528,21 +537,21 @@ struct npc_demonic_vaporAI : public CombatAI
         SetMeleeEnabled(false);
         SetDeathPrevention(true);
         AddCustomAction(1, 1500u, [&]()
-        {
-            SetReactState(REACT_AGGRESSIVE);
-            m_creature->SetInCombatWithZone();
-            SetCombatMovement(true);
-            Unit* attackTarget = nullptr;
-            if (Unit* target = m_creature->GetSpawner())
-                attackTarget = target;
-            else
-                attackTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1, nullptr, SELECT_FLAG_PLAYER);
-            if (attackTarget)
             {
-                m_creature->AddThreat(attackTarget, 1000000.f);
-                AttackStart(attackTarget);
-            }
-        });
+                SetReactState(REACT_AGGRESSIVE);
+                m_creature->SetInCombatWithZone();
+                SetCombatMovement(true);
+                Unit* attackTarget = nullptr;
+                if (Unit* target = m_creature->GetSpawner())
+                    attackTarget = target;
+                else
+                    attackTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1, nullptr, SELECT_FLAG_PLAYER);
+                if (attackTarget)
+                {
+                    m_creature->AddThreat(attackTarget, 1000000.f);
+                    AttackStart(attackTarget);
+                }
+            });
     }
 
     void JustRespawned() override
