@@ -5098,7 +5098,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 }
             }
 
-            if (IsPositiveSpell(m_spellInfo->Id, m_trueCaster, target) && affectedMask)
+            if (!ignoreRestrictions && IsPositiveSpell(m_spellInfo->Id, m_trueCaster, target) && affectedMask)
                 if (target->IsImmuneToSpell(m_spellInfo, target == m_trueCaster, affectedMask, m_trueCaster))
                     return SPELL_FAILED_TARGET_AURASTATE;
 
@@ -6744,6 +6744,17 @@ bool Spell::IgnoreItemRequirements() const
 {
     if (m_channelOnly || m_ignoreCosts)
         return true;
+
+#ifdef ENABLE_PLAYERBOTS
+    if (m_caster->IsPlayer())
+    {
+        PlayerbotAI* bot = ((Player*)m_caster)->GetPlayerbotAI();
+        if (bot && bot->HasSpellItems(m_spellInfo->Id, m_CastItem))
+        {
+            return true;
+        }
+    }
+#endif
 
     // Workaround for double shard problem
     if (m_IsTriggeredSpell || this->m_spellInfo->Id == 46546)

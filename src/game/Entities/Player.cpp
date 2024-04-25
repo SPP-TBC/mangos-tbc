@@ -4772,6 +4772,15 @@ void Player::DurabilityLossAll(double percent, bool inventory)
 
 void Player::DurabilityLoss(Item* item, double percent)
 {
+#ifdef ENABLE_PLAYERBOTS
+    PlayerbotAI* bot = GetPlayerbotAI();
+    if (bot)
+    {
+        bot->DurabilityLoss(item, percent);
+        return;
+    }
+#endif
+
     if (!item)
         return;
 
@@ -22033,6 +22042,19 @@ void Player::SendLootError(ObjectGuid guid, LootError error) const
     data << uint8(0);
     data << uint8(error);
     SendDirectMessage(data);
+}
+
+void Player::SetDeathPrevention(bool enable)
+{
+    if (enable)
+        m_ExtraFlags |= PLAYER_EXTRA_GM_UNKILLABLE;
+    else
+        m_ExtraFlags &= ~PLAYER_EXTRA_GM_UNKILLABLE;
+}
+
+bool Player::IsPreventingDeath() const
+{
+    return m_ExtraFlags & PLAYER_EXTRA_GM_UNKILLABLE;
 }
 
 void Player::AddGCD(SpellEntry const& spellEntry, uint32 /*forcedDuration = 0*/, bool updateClient /*= false*/)
